@@ -1,8 +1,10 @@
 # Mock JSON micro-services
 
+> Work in progress; not ready yet
+
 Run a micro JSON server with docker that receives and responds to canned JSON requests with certain parameters.
 
-This uses a tiny alpine image with a python server (see `src/mock_json_service/server.py` for source).
+Declare your mock endpoints in a single JSON file, then run the server with a tiny alpine docker image.
 
 ## Quick start
 
