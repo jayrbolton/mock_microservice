@@ -1,11 +1,10 @@
 [
   {
-    "methods": ["GET"],
     "path": "/whoami",
     "headers": {"Authorization": "Bearer valid_user_token"},
     "response": {
       "status": "200",
-      "body": "valid_user_name"
+      "body": {"username": "valid_user"}
     }
   },
   {
@@ -14,7 +13,13 @@
     "headers": {"Authorization": "Bearer invalid_user"},
     "response": {
       "status": "403",
-      "body": "Unauthorized"
+      "body": {"error": "Unauthorized"}
     }
+  },
+  {
+    "methods": ["PUT", "POST"],
+    "path": "/login",
+    "body": {"username": "admin", "password": "password"},
+    "response": { "status": "200" }
   }
 ]

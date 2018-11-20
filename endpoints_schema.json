@@ -7,9 +7,9 @@
     "properties": {
       "methods": {
         "type": "array",
+        "default": ["GET"],
         "items": {
           "type": "string",
-          "default": "GET",
           "enum": ["GET", "POST", "PUT", "DELETE"]
         }
       },
@@ -20,14 +20,14 @@
       "headers": {
         "type": "object"
       },
+      "body": {
+        "type": "object"
+      },
       "response": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "body": {
-            "type": "string",
-            "default": ""
-          },
+          "body": { "type": "object" },
           "status": {
             "type": "string",
             "default": "200",
