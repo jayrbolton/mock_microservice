@@ -1,0 +1,20 @@
+[
+  {
+    "methods": ["GET"],
+    "path": "/whoami",
+    "headers": {"Authorization": "Bearer valid_user_token"},
+    "response": {
+      "status": "200",
+      "body": "valid_user_name"
+    }
+  },
+  {
+    "methods": ["GET"],
+    "path": "/whoami",
+    "headers": {"Authorization": "Bearer invalid_user"},
+    "response": {
+      "status": "403",
+      "body": "Unauthorized"
+    }
+  }
+]

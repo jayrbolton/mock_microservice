@@ -1,0 +1,15 @@
+# Environment variables
+.env
+
+# Caches and temp dirs
+/build/
+/dist/
+*.pyc
+.mypy_cache/
+.cache/
+tmp/*
+coverage_report/
+.coverage
+
+# Relation engine spec sub-repo that gets pulled while the server is running
+/relation_engine_spec/
