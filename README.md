@@ -55,7 +55,7 @@ docker $(pwd)/test/mock_service:/config mockservices/mock_json_service
 
 Where `$(pwd)/test/mock_service/endpoints.json` is your configuration file.
 
-The above runs a simple python server that validates your configuration and accepts (or denies) requests according to your mocked endpoints.
+The above runs a simple python server **exposed on port 5000** that validates your configuration and accepts (or denies) requests according to your mocked endpoints.
 
 I like to keep a `docker-compose.yaml` for testing services using multiple images. Here is an example where we define a mock service alongside other ones:
 
