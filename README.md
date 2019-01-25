@@ -1,10 +1,6 @@
 # Mock JSON micro-services
 
-> Work in progress; not ready yet
-
-Run a micro JSON server with docker that receives and responds to canned JSON requests with certain parameters.
-
-Declare your mock endpoints in a single JSON file, then run the server with a tiny alpine docker image.
+Declare mock endpoints in a single JSON file, then run the server with a tiny alpine docker image.
 
 ## Quick start
 
@@ -37,11 +33,12 @@ The following example defines two mock responses for an authentication service -
 ]
 ```
 
-This file is always an array of mock endpoints that the service can respond to. Each element of the array is an object with the following keys:
+This file is an array of mock requests and responses that the service can handle. Each element of the array is an object with the following keys:
 
-* `method` - required - array of string - http methods that the endpoint accepts
-* `path` - required - string - url path of the endpoint
-* `headers` - optional - object - headers that the endpoint accepts
+* `method` - required - array of string - request http methods to match against
+* `path` - required - string - request url path of the endpoint
+* `headers` - optional - object - request headers to match against
+* `body` - optional - object - request body JSON to match against
 * `response` - required - object
   * `status` - optional (defaults to 200) - string - the status of the response
   * `body` - optional - string or object - the text or JSON of the response
@@ -50,29 +47,33 @@ Any requests that are made to the server that are not found in `endpoints.json` 
 
 ### Running the docker image
 
-Run the docker image `mockeservices/json_service` from docker hub with your `endpoints.json` file mounted to `/config/endpoints.json` in the container.
+Run the docker image `mockservices/mock_json_service` with your `endpoints.json` file mounted to `/config/endpoints.json` inside the container.
 
-For example, you might have a `docker-compose.yaml` for running tests, with one service that actually runs your API, and other services that are mocked out using the `mockservices/json_service` image:
-
+```sh
+docker $(pwd)/test/mock_service:/config mockservices/mock_json_service
 ```
+
+Where `$(pwd)/test/mock_service/endpoints.json` is your configuration file.
+
+The above runs a simple python server **exposed on port 5000** that validates your configuration and accepts (or denies) requests according to your mocked endpoints.
+
+I like to keep a `docker-compose.yaml` for testing services using multiple images. Here is an example where we define a mock service alongside other ones:
+
+```yaml
 version: '3'
 
-# This docker-compose file is for testing our server
+# This docker-compose is for testing
 
 services:
 
-  # This is the actual server we are testing
+  # For running the app server
   web:
-    build: .
+    build: . 
     ...
 
-  # This is a mocked secondary service
-  auth_service:
-    image: mockservices/json_service
-    ports:
-      - 5000:5000
-    # Mount the directory of your endpoints.json file to /config in the container
-    # This way, the container has access to /config/endpoints.json
+  # A mock auth server (see test/mock_auth/endpoints.json)
+  auth:
+    image: mockservices/mock_json_service
     volumes:
-      - test/auth_service:/config
+      - ${PWD}/test/mock_auth:/config
 ```
