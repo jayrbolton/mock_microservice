@@ -24,7 +24,7 @@ except ValidationError as err:
     sys.stderr.write(str(err) + '\n')
     sys.exit(1)
 
-sys.stdout.write('Loaded %s mock endpoints\n' % len(endpoints))
+print('Loaded {} mock endpoints'.format(endpoints))
 
 # Start the Flask app
 app = flask.Flask(__name__)
@@ -37,6 +37,7 @@ def handle_request(path):
     """
     Catch-all: handle any request against the endpoints.json data.
     """
+    print('-' * 80)
     path = '/' + path
     req_body = json.loads(flask.request.get_data() or '{}')
     method = flask.request.method
@@ -48,10 +49,17 @@ def handle_request(path):
         body_ok = ep_body is None or ep_body == req_body
         headers_ok = match_headers(endpoint)
         if method_ok and path_ok and body_ok and headers_ok:
-            sys.stdout.write('Matched endpoint %s %s\n' % (method, path))
+            print('Matched endpoint {} {}'.format(method, path))
             resp = endpoint['response']
             resp_body = flask.jsonify(resp.get('body', ''))
             return (resp_body, resp['status'])
+        else:
+            print('Unable to match endpoint {} {}'.format(method, path))
+            print('Method matched: {}'.format(method_ok))
+            print('Path matched: {}'.format(path_ok))
+            print('Body matched: {}'.format(body_ok))
+            print('Headers matched: {}'.format(headers_ok))
+            sys.stdout.write('Unable to match endpoint\n')
     raise Exception('Unable to match endpoint: %s %s' % (method, path))
 
 
