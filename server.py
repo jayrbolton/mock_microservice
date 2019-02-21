@@ -24,7 +24,7 @@ except ValidationError as err:
     sys.stderr.write(str(err) + '\n')
     sys.exit(1)
 
-print('Loaded {} mock endpoints'.format(endpoints))
+print('Loaded {} mock endpoints'.format(json.dumps(endpoints, indent=2)))
 
 # Start the Flask app
 app = flask.Flask(__name__)
@@ -39,27 +39,48 @@ def handle_request(path):
     """
     print('-' * 80)
     path = '/' + path
-    req_body = json.loads(flask.request.get_data() or '{}')
+    req_body = flask.request.get_data().decode() or ''
     method = flask.request.method
     # Find the first endpoint that matches path, method, headers, and body
     for endpoint in endpoints:
-        method_ok = method in endpoint.get('methods', ['GET'])
-        path_ok = endpoint['path'] == path
-        ep_body = endpoint.get('body')
-        body_ok = ep_body is None or ep_body == req_body
-        headers_ok = match_headers(endpoint)
-        if method_ok and path_ok and body_ok and headers_ok:
-            print('Matched endpoint {} {}'.format(method, path))
-            resp = endpoint['response']
-            resp_body = flask.jsonify(resp.get('body', ''))
-            return (resp_body, resp['status'])
+        if endpoint['path'] == path:
+            print('Matched path:', path)
         else:
-            print('Unable to match endpoint {} {}'.format(method, path))
-            print('Method matched: {}'.format(method_ok))
-            print('Path matched: {}'.format(path_ok))
-            print('Body matched: {}'.format(body_ok))
-            print('Headers matched: {}'.format(headers_ok))
-            sys.stdout.write('Unable to match endpoint\n')
+            continue
+        expected_methods = endpoint.get('methods', ['GET'])
+        if method in expected_methods:
+            print('Matched method')
+        else:
+            msg = f'Mismatch on method: {method} vs {expected_methods}'
+            print(msg)
+            continue
+        if match_headers(endpoint):
+            print('Matched headers')
+        else:
+            hs = dict(flask.request.headers)
+            expected_hs = endpoint.get('headers')
+            msg = f'Mismatch on headers:\n  got:      {hs}\n  expected: {expected_hs}'
+            print(msg)
+            continue
+        expected_body = endpoint.get('body', '')
+        if isinstance(expected_body, dict):
+            expected_body_json = json.dumps(expected_body)
+            try:
+                given_body_json = json.dumps(json.loads(req_body))
+            except Exception as err:
+                print('Error parsing json body:', str(err))
+                continue
+            body_ok = expected_body_json == given_body_json
+        else:
+            body_ok = expected_body.strip() == req_body.strip()
+        if body_ok:
+            print('Matched body')
+        else:
+            msg = f'Mismatch on body:\n  got:      {req_body}\n  expected: {expected_body}'
+            print(msg)
+            continue
+        print('Matched endpoint {} {}'.format(method, path))
+        return mock_response(endpoint.get('response', {}))
     raise Exception('Unable to match endpoint: %s %s' % (method, path))
 
 
@@ -84,3 +105,14 @@ def match_headers(endpoint):
         if val != headers.get(key):
             return False
     return True
+
+
+def mock_response(config):
+    """
+    Create a mock flask response from the endpoints.json configuration
+    """
+    resp = flask.Response(config.get('body'))
+    resp.status = config.get('status', '200')
+    for (header, val) in config.get('headers', {}).items():
+        resp.headers[header] = val
+    return resp

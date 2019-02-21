@@ -10,7 +10,8 @@ RUN apk --update add --virtual build-dependencies python-dev build-base && \
 
 # Run the server
 COPY . /server
+EXPOSE 5000
 ENV PYTHONUNBUFFERED=1
-ENV FLASK_ENV=development
+ENV FLASK_ENV=production
 ENV FLASK_APP=server.py
 CMD ["flask", "run", "--host=0.0.0.0"]
