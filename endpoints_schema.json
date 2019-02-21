@@ -20,19 +20,18 @@
       "headers": {
         "type": "object"
       },
-      "body": {
-        "type": "object"
-      },
+      "body": { "anyOf": [{"type": "string"}, {"type": "object"}] },
       "response": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "body": { "type": "object" },
+          "body": { "anyOf": [{"type": "string"}, {"type": "object"}] },
           "status": {
             "type": "string",
             "default": "200",
             "pattern": "^\\d\\d\\d$"
-          }
+          },
+          "headers": { "type": "object" }
         }
       }
     }

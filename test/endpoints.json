@@ -13,13 +13,26 @@
     "headers": {"Authorization": "Bearer invalid_user"},
     "response": {
       "status": "403",
-      "body": {"error": "Unauthorized"}
+      "body": "{\"error\": \"Unauthorized\"}"
     }
   },
   {
     "methods": ["PUT", "POST"],
     "path": "/login",
     "body": {"username": "admin", "password": "password"},
-    "response": { "status": "200" }
+    "response": {
+      "status": "200",
+      "body": "{\"status\": \"logged_in\"}",
+      "headers": {"Content-Type": "application/json"}
+    }
+  },
+  {
+    "path": "/non-json",
+    "headers": {"Content-Type": "application/x-www-form-urlencoded"},
+    "body": "hello=1&world=2"
+  },
+  {
+    "path": "/non-json",
+    "methods": ["PUT"]
   }
 ]

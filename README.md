@@ -50,7 +50,7 @@ Any requests that are made to the server that are not found in `endpoints.json` 
 Run the docker image `mockservices/mock_json_service` with your `endpoints.json` file mounted to `/config/endpoints.json` inside the container.
 
 ```sh
-docker $(pwd)/test/mock_service:/config mockservices/mock_json_service
+docker run -p 5000:5000 -v $(pwd)/test/mock_service:/config mockservices/mock_json_service
 ```
 
 Where `$(pwd)/test/mock_service/endpoints.json` is your configuration file.
@@ -74,6 +74,8 @@ services:
   # A mock auth server (see test/mock_auth/endpoints.json)
   auth:
     image: mockservices/mock_json_service
+    ports:
+      - 5000:5000
     volumes:
       - ${PWD}/test/mock_auth:/config
 ```
