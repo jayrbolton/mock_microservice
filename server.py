@@ -111,7 +111,10 @@ def mock_response(config):
     """
     Create a mock flask response from the endpoints.json configuration
     """
-    resp = flask.Response(config.get('body'))
+    resp_body = config.get('body')
+    if isinstance(resp_body, dict):
+        resp_body = json.dumps(resp_body)
+    resp = flask.Response(resp_body)
     resp.status = config.get('status', '200')
     for (header, val) in config.get('headers', {}).items():
         resp.headers[header] = val
