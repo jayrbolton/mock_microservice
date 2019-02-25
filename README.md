@@ -1,6 +1,6 @@
-# Mock JSON micro-services
+# Mock micro-services
 
-Declare mock endpoints in a single JSON file, then run the server with a tiny alpine docker image.
+Declare mock endpoints in a single JSON configuration, then run the server in a tiny alpine docker image.
 
 ## Quick start
 
@@ -38,12 +38,15 @@ This file is an array of mock requests and responses that the service can handle
 * `method` - required - array of string - request http methods to match against
 * `path` - required - string - request url path of the endpoint
 * `headers` - optional - object - request headers to match against
-* `body` - optional - object - request body JSON to match against
+* `body` - optional - string | object - request body to match against
 * `response` - required - object
   * `status` - optional (defaults to 200) - string - the status of the response
-  * `body` - optional - string or object - the text or JSON of the response
+  * `body` - optional - string or object - the response content
+  * `headers` - optional - object - response headers
 
 Any requests that are made to the server that are not found in `endpoints.json` respond with a 500 status.
+
+Check the server logs to debug requests that don't match any endpoints you have defined in your config.
 
 ### Running the docker image
 
