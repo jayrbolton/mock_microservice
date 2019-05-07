@@ -6,34 +6,39 @@ Declare mock endpoints in a single JSON configuration, then run the server in a 
 
 ### Writing the endpoints.json file
 
-First, write a JSON configuration file that defines some endpoints and canned responses. Name it `endpoints.json`.
+First, write JSON configuration files that define some endpoints and canned responses.
 
 The following example defines two mock responses for an authentication service -- one for an invalid user, and one for a valid user.
 
+`authorized_whoami.json`
+
 ```json
-[
-  {
-    "methods": ["GET"],
-    "path": "/whoami",
-    "headers": {"Authorization": "Bearer valid_user_token"},
-    "response": {
-      "status": "200",
-      "body": "valid_user_name"
-    }
-  },
-  {
-    "methods": ["GET"],
-    "path": "/whoami",
-    "headers": {"Authorization": "Bearer invalid_user"},
-    "response": {
-      "status": "403",
-      "body": "Unauthorized"
-    }
+{
+  "methods": ["GET"],
+  "path": "/whoami",
+  "headers": {"Authorization": "Bearer valid_user_token"},
+  "response": {
+    "status": "200",
+    "body": "valid_user_name"
   }
-]
+}
 ```
 
-This file is an array of mock requests and responses that the service can handle. Each element of the array is an object with the following keys:
+`unauthorized_whoami.json`
+
+```json
+{
+  "methods": ["GET"],
+  "path": "/whoami",
+  "headers": {"Authorization": "Bearer invalid_user"},
+  "response": {
+    "status": "403",
+    "body": "Unauthorized"
+  }
+}
+```
+
+Each mock config file has the following properties:
 
 * `method` - required - array of string - request http methods to match against
 * `path` - required - string - request url path of the endpoint
@@ -44,19 +49,19 @@ This file is an array of mock requests and responses that the service can handle
   * `body` - optional - string or object - the response content
   * `headers` - optional - object - response headers
 
-Any requests that are made to the server that are not found in `endpoints.json` respond with a 500 status.
+Any requests that are made to the server that do not match any config file respond with a 500 status.
 
-Check the server logs to debug requests that don't match any endpoints you have defined in your config.
+Check the server logs to debug requests that don't match any endpoints you have defined in your configs.
 
 ### Running the docker image
 
-Run the docker image `mockservices/mock_json_service` with your `endpoints.json` file mounted to `/config/endpoints.json` inside the container.
+Run the docker image `mockservices/mock_json_service` with your config file directory mounted to `/config` inside the container.
 
 ```sh
 docker run -p 5000:5000 -v $(pwd)/test/mock_service:/config mockservices/mock_json_service
 ```
 
-Where `$(pwd)/test/mock_service/endpoints.json` is your configuration file.
+Where `$(pwd)/test/mock_service` contains your json configuration files.
 
 The above runs a simple python server **exposed on port 5000** that validates your configuration and accepts (or denies) requests according to your mocked endpoints.
 

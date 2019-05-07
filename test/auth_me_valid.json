@@ -1,0 +1,26 @@
+{
+  "methods": [
+    "GET"
+  ],
+  "path": "/api/V2/me",
+  "headers": {
+    "Authorization": "admin_token"
+  },
+  "response": {
+    "status": "200",
+    "body": {
+      "created": 1528306100471,
+      "lastlogin": 1542068355002,
+      "display": "Test User",
+      "roles": [],
+      "customroles": [
+        "RE_ADMIN"
+      ],
+      "policyids": [],
+      "user": "username",
+      "local": false,
+      "email": "user@example.com",
+      "idents": []
+    }
+  }
+}
