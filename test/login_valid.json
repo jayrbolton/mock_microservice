@@ -1,0 +1,10 @@
+{
+  "methods": ["PUT", "POST"],
+  "path": "/login",
+  "body": {"username": "admin", "password": "password"},
+  "response": {
+    "status": "200",
+    "body": "{\"status\": \"logged_in\"}",
+    "headers": {"Content-Type": "application/json"}
+  }
+}

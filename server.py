@@ -8,23 +8,33 @@ from jsonschema.exceptions import ValidationError
 
 # Load the endpoints data, the schema, and validate the structure
 
-with open('endpoints_schema.json') as fd:
-    endpoints_schema = json.load(fd)
+# For validating every config file
+with open('endpoint_schema.json') as fd:
+    endpoint_schema = json.load(fd)
 
-if not os.path.exists('/config/endpoints.json'):
-    sys.stderr.write('File not found: /config/endpoints.json\n')
+if not os.path.exists('/config'):
+    sys.stderr.write('Path not found: /config\n')
     sys.exit(1)
 
-with open('/config/endpoints.json') as fd:
-    endpoints = json.load(fd)
-try:
-    jsonschema.validate(endpoints, endpoints_schema)
-except ValidationError as err:
-    sys.stderr.write('JSON Schema validation Error on endpoints.json:\n')
-    sys.stderr.write(str(err) + '\n')
-    sys.exit(1)
+endpoints = []
+for path in os.listdir('/config'):
+    if path.endswith('.json'):
+        full_path = '/config/' + path
+        with open(full_path) as fd:
+            try:
+                endpoint = json.load(fd)
+            except ValueError as err:
+                sys.stderr.write(f'JSON parsing error:\n{err}')
+                sys.exit(1)
+            try:
+                jsonschema.validate(endpoint, endpoint_schema)
+            except ValidationError as err:
+                sys.stderr.write(f'JSON Schema validation Error for {path}:\n')
+                sys.stderr.write(str(err) + '\n')
+                sys.exit(1)
+            endpoints.append(endpoint)
 
-print('Loaded {} mock endpoints'.format(json.dumps(endpoints, indent=2)))
+print(f'Loaded {len(endpoints)} mock endpoints')
 
 # Start the Flask app
 app = flask.Flask(__name__)

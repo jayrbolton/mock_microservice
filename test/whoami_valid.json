@@ -1,0 +1,8 @@
+{
+  "path": "/whoami",
+  "headers": {"Authorization": "Bearer valid_user_token"},
+  "response": {
+    "status": "200",
+    "body": {"username": "valid_user"}
+  }
+}
