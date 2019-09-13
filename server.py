@@ -108,12 +108,21 @@ def match_headers(endpoint):
     Either check that there are no headers to match, or match that all headers
     in the endpoint are present and equal in the request.
     """
-    if 'headers' not in endpoint:
+    if 'headers' not in endpoint and 'absent_headers' not in endpoint:
         return True
     headers = dict(flask.request.headers)
-    for (key, val) in endpoint['headers'].items():
-        if val != headers.get(key):
-            return False
+    if 'headers' in endpoint:
+        for (key, val) in endpoint['headers'].items():
+            if val != headers.get(key):
+                return False
+    # Enforce that certain headers must be absent
+    if 'absent_headers' in endpoint:
+        header_keys = set(key.lower() for key in headers.keys())
+        print('headers are', headers)
+        for key in endpoint['absent_headers']:
+            print('checking absent', key)
+            if key.lower() in header_keys:
+                return False
     return True
 
 

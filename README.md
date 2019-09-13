@@ -48,6 +48,7 @@ Each mock config file has the following properties:
   * `status` - optional (defaults to 200) - string - the status of the response
   * `body` - optional - string or object - the response content
   * `headers` - optional - object - response headers
+  * `absent_headers` - optional - array of string - enforce that headers must be absent in the request
 
 Any requests that are made to the server that do not match any config file respond with a 500 status.
 
