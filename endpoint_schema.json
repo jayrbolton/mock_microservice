@@ -18,6 +18,10 @@
     "headers": {
       "type": "object"
     },
+    "absent_headers": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
     "body": { "anyOf": [{"type": "string"}, {"type": "object"}] },
     "response": {
       "type": "object",
